@@ -1,0 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&family=Poppins:wght@400;500;600&display=swap");
+
+.card {
+    margin: 0;
+    padding: 50px 0px;
+    background: linear-gradient(120deg, #000000, #04114d);
+    height: 95vh;
+    overflow: hidden;
+}

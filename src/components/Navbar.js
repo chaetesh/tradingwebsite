@@ -1,13 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import Notiflix from "notiflix";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  let location = useLocation();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    Notiflix.Notify.success("Logout Succesfull");
+    navigate("/");
+  };
+
   return (
     <>
-      <nav
-        class="bg-white border-gray-200 dark:bg-gray-900"
-        style={{ fontSize: "1.2rem", backgroundColor: "black" }}
-      >
+      <nav class="" style={{ fontSize: "1.2rem" }}>
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
             <img
@@ -15,7 +23,7 @@ const Navbar = () => {
               class="h-8"
               alt="Trading Logo"
             />
-            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+            <span class="text-white self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
               Trading Website
             </span>
           </a>
@@ -55,21 +63,34 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <a
-                  href="/about"
+                <Link
+                  to="/about"
                   class="nav-text block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
                   aria-current="page"
                 >
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#"
-                  class="nav-text block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
-                >
-                  Services
-                </a>
+                {!localStorage.getItem("token") ? (
+                  <form className="d-flex">
+                    <Link
+                      class="nav-text block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                      aria-current="page"
+                      to="/login"
+                    >
+                      Login
+                    </Link>
+                  </form>
+                ) : (
+                  <button
+                    class="nav-text block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500"
+                    aria-current="page"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                )}
               </li>
               <li>
                 <a

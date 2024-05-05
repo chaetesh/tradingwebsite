@@ -393,7 +393,7 @@ export default class Home extends Component {
             paddingRight: "30px",
           }}
         >
-          <h1 style={{ textAlign: "center", paddingRight: "500px" }}>
+          <h1 style={{ textAlign: "center", paddingRight: "500px",color:"white" }}>
             Order Table
           </h1>
           <button className="button" onClick={this.remove}>

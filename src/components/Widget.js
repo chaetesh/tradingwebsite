@@ -16,12 +16,9 @@ const Widget = React.memo((props) => {
           style="2"
           theme={Themes.DARK}
           range="12m"
-          // toolbar_bg = "#f1f3f6"
           allow_symbol_change={false}
           details={true}
-          studies={["MASimple@tv-basicstudies"]}
-          // hotlist = {true}
-          // calendar = {true}
+          studies={["MASimple@tv-basicstudies"]} 
         />
       </div>
     </div>

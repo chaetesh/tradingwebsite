@@ -214,7 +214,9 @@ export default function BuySell(props) {
     <div className="BuySell-div">
       <div className="Dropdown">
         <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label" >Coin</InputLabel>
+          <InputLabel id="demo-simple-select-label" style={{ color: "white" }}>
+            Coin
+          </InputLabel>
           <Select
             sx={style.coinlist}
             labelId="demo-simple-select-label"
@@ -223,6 +225,7 @@ export default function BuySell(props) {
             value={coin}
             label="Coin"
             onChange={handleChange}
+            style={{ color: "white" }}
           >
             <MenuItem value={"bitcoin"}>Bitcoin</MenuItem>
             <MenuItem value={"ethereum"}>Ethereum</MenuItem>
@@ -231,7 +234,7 @@ export default function BuySell(props) {
           </Select>
         </FormControl>
       </div>
-      <List sx={style.list}>
+      <List sx={style.list} style={{ opacity: "0.8" }}>
         <ListItem>
           <ListItemAvatar>
             <ListItemAvatar>
@@ -279,7 +282,6 @@ export default function BuySell(props) {
           {getFormatedHolding(props.holding)}
           {/* <ListItemText primary={`${getFormatedHolding(props.holding)} `} /> */}
         </ListItem>
-
       </List>
 
       {/*Buy Sell Buttons Row Starts here*/}
@@ -476,7 +478,9 @@ export default function BuySell(props) {
                   <span>Sell</span>
                 </button>
               </Box>
-            ):({})}
+            ) : (
+              {}
+            )}
           </Box>
         </Modal>
       </div>
