@@ -20,9 +20,7 @@ order = {
 }
 */
 
-import {
-  handleBuyNow,
-} from "../components/handleOrder";
+import { handleBuyNow } from "../components/handleOrder";
 
 import axios from "axios";
 
@@ -102,17 +100,41 @@ const executePrevCompletedOrders = async (
   // oldestUnfinishedOrderTime = 1642633200000;
 
   // get historical data
-  const historicalDataFetchUrl = `https://api.coincap.io/v2/assets/bitcoin/history?interval=h1&start?=${oldestUnfinishedOrderTime}`;
+  // Convert the timestamp to seconds for CoinGecko API
+  const fromTimestamp = Math.floor(oldestUnfinishedOrderTime / 1000);
+  const toTimestamp = Math.floor(Date.now() / 1000);
+
+  // CoinGecko API for historical data
+  const historicalDataFetchUrl = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`;
   console.log(historicalDataFetchUrl);
 
-  const res = await axios.get(historicalDataFetchUrl, {
-    raxConfig: {
-      retry: 5,
-      retryDelay: 800,
-    },
-  });
-  console.log(res);
-  const historicalData = res.data.data;
+  let historicalData = [];
+  try {
+    const res = await axios.get(historicalDataFetchUrl, {
+      raxConfig: {
+        retry: 5,
+        retryDelay: 800,
+      },
+    });
+    console.log(res);
+
+    // Transform CoinGecko data format to match our expected format
+    // CoinGecko returns prices as [timestamp, price] pairs
+    if (res.data && res.data.prices && res.data.prices.length > 0) {
+      historicalData = res.data.prices.map((item) => ({
+        date: new Date(item[0]).toISOString(), // Convert timestamp to ISO string
+        priceUsd: item[1].toString(), // Convert price to string to match previous format
+      }));
+    }
+  } catch (error) {
+    console.error("Failed to fetch historical data:", error);
+    return {
+      newBalance: newBalanceAfterCompletingPrevOrders,
+      newHolding: newHoldingAfterCompletingPrevOrders,
+      newSortedHolding: newSortedHoldingAfterCompletingPrevOrders,
+      updatedAllOrders: updatedAllOrders,
+    };
+  }
 
   console.log("data fetched", historicalData);
   console.log(

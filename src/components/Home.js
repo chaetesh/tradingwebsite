@@ -166,102 +166,101 @@ export default class Home extends Component {
 
   quickUpdateCurrentPriceUsingApi() {
     // bitcoin
-    var config = {
-      method: "get",
-      url: "https://api.coincap.io/v2/rates/bitcoin",
-      headers: {},
-      raxConfig: {
-        retry: 3,
-        retryDelay: 500,
-      },
-    };
-    axios(config)
-      .then(
-        function (response) {
-          console.log(
-            "\n\n\n got bitcoin price from api",
-            response.data.data.rateUsd
-          );
-          const price = response.data.data.rateUsd;
-          let updatedCurrentPrice = { ...this.state.currentPrice };
-          updatedCurrentPrice.bitcoin = price;
-          this.setState({ currentPrice: updatedCurrentPrice });
-        }.bind(this)
-      )
-      .catch(function (error) {
+    fetch("https://api.coingecko.com/api/v3/coins/bitcoin")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(
+          "\n\n\n got bitcoin price from api",
+          data.market_data.current_price.usd
+        );
+        const price = data.market_data.current_price.usd;
+        let updatedCurrentPrice = { ...this.state.currentPrice };
+        updatedCurrentPrice.bitcoin = price.toString();
+        this.setState({ currentPrice: updatedCurrentPrice });
+      })
+      .catch((error) => {
         console.log("error updating currentPrice of bitcoin by API", error);
       });
 
     // ethereum
-    var config = {
-      method: "get",
-      url: "https://api.coincap.io/v2/rates/ethereum",
-      headers: {},
-      raxConfig: {
-        retry: 3,
-        retryDelay: 500,
-      },
-    };
-    axios(config)
-      .then(
-        function (response) {
-          console.log(
-            "\n\n\n got ethereum price from api",
-            response.data.data.rateUsd
-          );
-          const price = response.data.data.rateUsd;
-          let updatedCurrentPrice = { ...this.state.currentPrice };
-          updatedCurrentPrice.ethereum = price;
-          this.setState({ currentPrice: updatedCurrentPrice });
-        }.bind(this)
-      )
-      .catch(function (error) {
+    fetch("https://api.coingecko.com/api/v3/coins/ethereum")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(
+          "\n\n\n got ethereum price from api",
+          data.market_data.current_price.usd
+        );
+        const price = data.market_data.current_price.usd;
+        let updatedCurrentPrice = { ...this.state.currentPrice };
+        updatedCurrentPrice.ethereum = price.toString();
+        this.setState({ currentPrice: updatedCurrentPrice });
+      })
+      .catch((error) => {
         console.log("error updating ethereum currentPrice by API", error);
       });
 
     // dogecoin
-    var config = {
-      method: "get",
-      url: "https://api.coincap.io/v2/rates/dogecoin",
-      headers: {},
-      raxConfig: {
-        retry: 3,
-        retryDelay: 500,
-      },
-    };
-    axios(config)
-      .then(
-        function (response) {
-          // console.log('\n\n\n dogecoin price got from api:', response.data.data.rateUsd);
-          const price = response.data.data.rateUsd;
-          let updatedCurrentPrice = { ...this.state.currentPrice };
-          updatedCurrentPrice.dogecoin = price;
-          this.setState({ currentPrice: updatedCurrentPrice });
-        }.bind(this)
-      )
-      .catch(function (error) {
-        console.log("error updating currentPrice by API", error);
+    fetch("https://api.coingecko.com/api/v3/coins/dogecoin")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(
+          "\n\n\n got dogecoin price from api",
+          data.market_data.current_price.usd
+        );
+        const price = data.market_data.current_price.usd;
+        let updatedCurrentPrice = { ...this.state.currentPrice };
+        updatedCurrentPrice.dogecoin = price.toString();
+        this.setState({ currentPrice: updatedCurrentPrice });
+      })
+      .catch((error) => {
+        console.log("error updating currentPrice of dogecoin by API", error);
       });
   }
 
   // updated the this.state.currentPrice, user details whenever we get a new current price
   startUpdatingCurrentPriceUsingWebsocket() {
-    // 1. websocket listener for bitcoin, etherium, dogecoin
+    // Instead of WebSocket, use periodic API calls to CoinGecko
+    // Set up an interval to fetch prices every 10 seconds
+    setInterval(() => {
+      // Bitcoin
+      fetch("https://api.coingecko.com/api/v3/coins/bitcoin")
+        .then((res) => res.json())
+        .then((data) => {
+          let newCurrentPrice = { ...this.state.currentPrice };
+          newCurrentPrice.bitcoin =
+            data.market_data.current_price.usd.toString();
+          this.setState({ currentPrice: newCurrentPrice });
+        })
+        .catch((error) => {
+          console.log("Error updating Bitcoin price:", error);
+        });
 
-    const pricesWs = new WebSocket(
-      "wss://ws.coincap.io/prices?assets=bitcoin,ethereum,dogecoin"
-    );
-    pricesWs.onmessage = function (msg) {
-      msg = JSON.parse(msg.data);
+      // Ethereum
+      fetch("https://api.coingecko.com/api/v3/coins/ethereum")
+        .then((res) => res.json())
+        .then((data) => {
+          let newCurrentPrice = { ...this.state.currentPrice };
+          newCurrentPrice.ethereum =
+            data.market_data.current_price.usd.toString();
+          this.setState({ currentPrice: newCurrentPrice });
+        })
+        .catch((error) => {
+          console.log("Error updating Ethereum price:", error);
+        });
 
-      let newCurrentPrice = { ...this.state.currentPrice };
-
-      if (msg.bitcoin) newCurrentPrice.bitcoin = msg.bitcoin;
-      if (msg.ethereum) newCurrentPrice.ethereum = msg.ethereum;
-      if (msg.dogecoin) newCurrentPrice.dogecoin = msg.dogecoin;
-
-      this.setState({ currentPrice: newCurrentPrice });
-    }.bind(this);
+      // Dogecoin
+      fetch("https://api.coingecko.com/api/v3/coins/dogecoin")
+        .then((res) => res.json())
+        .then((data) => {
+          let newCurrentPrice = { ...this.state.currentPrice };
+          newCurrentPrice.dogecoin =
+            data.market_data.current_price.usd.toString();
+          this.setState({ currentPrice: newCurrentPrice });
+        })
+        .catch((error) => {
+          console.log("Error updating Dogecoin price:", error);
+        });
+    }, 10000); // Update every 10 seconds
   }
 
   getCurrentPrice = () => {
@@ -393,7 +392,13 @@ export default class Home extends Component {
             paddingRight: "30px",
           }}
         >
-          <h1 style={{ textAlign: "center", paddingRight: "500px",color:"white" }}>
+          <h1
+            style={{
+              textAlign: "center",
+              paddingRight: "500px",
+              color: "white",
+            }}
+          >
             Order Table
           </h1>
           <button className="button" onClick={this.remove}>
